@@ -83,11 +83,6 @@ public class TeleOpHolonomic extends OpMode {
         double a = getJoystickAngle(x, y);
         double m = getJoyStickMagnitude(x, y);
 
-        // Send the angle and magnitude just for debugging purposes.
-        telemetry.addData("a", a);
-        telemetry.addData("m", m);
-        telemetry.update();
-
         // Calculate the motor power desired for each drive motor and set its
         // power level appropriately. Combine the translation power directly
         // with the rotation value from r so that the robot can translate and
@@ -99,5 +94,11 @@ public class TeleOpHolonomic extends OpMode {
             double p = calculateTranslationMotorPower(i, a, m) + r;
             driveMotor[i].setPower(Range.clip(p, -1.0, +1.0));
         }
+
+        // Send the control parameters for debugging purposes.
+        telemetry.addData("a", a);
+        telemetry.addData("m", m);
+        telemetry.addData("r", r);
+        telemetry.update();
     }
 }
