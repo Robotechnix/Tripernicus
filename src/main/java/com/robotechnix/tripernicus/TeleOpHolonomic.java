@@ -60,6 +60,9 @@ public class TeleOpHolonomic extends OpMode {
 
     @Override
     public void init() {
+        // Reduce the dead zone to 5% so the joysticks are more sensitive.
+        gamepad1.setJoystickDeadzone((float) 0.05);
+
         // Initialize all drive motors (with the same direction and mode).
         for (int i=0; i < wheelCount; i++) {
             driveMotor[i] = hardwareMap.dcMotor.get(motorNamePrefix + i);
