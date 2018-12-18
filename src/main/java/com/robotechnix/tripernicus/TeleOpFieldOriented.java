@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
+import java.util.Locale;
+
 @TeleOp
 @SuppressWarnings({"unused"})
 public class TeleOpFieldOriented extends OpMode {
@@ -62,6 +64,15 @@ public class TeleOpFieldOriented extends OpMode {
         return magnitude * motorPower;
     }
 
+    // Calculate a factor to rescale the input double array so that any value
+    // has a maximum of |1.0|.
+    private static double calculateScalingFactor(double[] ary) {
+        double max = 0.0;
+        for (double val : ary)
+            max = Math.max(max, Math.abs(val));
+        return 1.0 / Math.max(1.0, max);
+    }
+
     @Override
     public void init() {
         // Reduce the dead zone to 5% so the joysticks are more sensitive.
@@ -96,13 +107,8 @@ public class TeleOpFieldOriented extends OpMode {
         // Get the current orientation of the robot around the Z axis.
         double o = imu.getAngularOrientation().firstAngle;
 
-        // Calculate the motor power desired for each drive motor and set its
-        // power level appropriately. Combine the translation power directly
-        // with the rotation value from r so that the robot can translate and
-        // rotate simultaneously. The rotation value could likely be combined
-        // in a more intelligent way so that it doesn't overwhelm the overall
-        // power level unfairly to make combined translation and rotation more
-        // smooth.
+        // Calculate the motor power desired for each drive motor for the desired
+        // translation angle, mixed with the desired rotation.
         //
         // For field-oriented control:
         //
@@ -111,9 +117,19 @@ public class TeleOpFieldOriented extends OpMode {
         // control by shifting the concept of the "front" of the robot to
         // always be the zero angle orientation (as set in the IMU at startup
         // time) rather than a fixed point on the actual robot.
+        double p[] = new double[3];
         for (int i=0; i < wheelCount; i++) {
-            double p = calculateTranslationMotorPower(i, a + o, m) + r;
-            driveMotor[i].setPower(Range.clip(p, -1.0, +1.0));
+            p[i] = calculateTranslationMotorPower(i, a + o, m) + r;
+        }
+
+        // Calculate a scaling factor so that the translation + rotation values
+        // do not exceed full power. This allows mixing translation and rotation
+        // in a way that drives quite smoothly.
+        double pScalingFactor = calculateScalingFactor(p);
+
+        // Tell the motors what to do, applying the scaling factor!
+        for (int i=0; i < wheelCount; i++) {
+            driveMotor[i].setPower(p[i] * pScalingFactor);
         }
 
         // Send the control parameters for debugging purposes.
@@ -121,6 +137,10 @@ public class TeleOpFieldOriented extends OpMode {
         telemetry.addData("m", m);
         telemetry.addData("r", r);
         telemetry.addData("o", o);
+        for (int i=0; i < wheelCount; i++) {
+            telemetry.addData("driveMotor[" + i + "]",
+                    String.format(Locale.US, "%.0f%%", 100.0 * driveMotor[i].getPower()));
+        }
         telemetry.update();
     }
 }
