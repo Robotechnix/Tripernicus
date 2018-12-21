@@ -21,7 +21,7 @@ public class TeleOpHolonomic extends OpMode {
 
     // The orientation of the robot, which can be set between 0 and 360 to set
     // what the "front" of the robot is (the rest of the code doesn't care).
-    final private static double robotOrientationAngle = Math.toRadians(180);
+    final private static double robotOrientationAngle = Math.toRadians(90);
 
     // An array of DcMotor variables, one for each drive motor.
     private DcMotor driveMotor[] = new DcMotor[wheelCount];
@@ -50,7 +50,7 @@ public class TeleOpHolonomic extends OpMode {
         // desired translation, taking into account the robot's orientation
         // angle (which end is the front), and the relative angle of the
         // particular wheel in question.
-        double motorPower = Math.sin(robotOrientationAngle +
+        double motorPower = Math.cos(robotOrientationAngle +
                                      (wheelSpacingAngle * motor) -
                                      angle);
 
