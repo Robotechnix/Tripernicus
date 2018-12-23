@@ -26,14 +26,14 @@ public class TeleOpFieldOriented extends OpMode {
 
     // The orientation of the robot, which can be set between 0 and 360 to set
     // what the "front" of the robot is (the rest of the code doesn't care).
-    final private static double robotOrientationAngle = Math.toRadians(90);
+    final private static double robotOrientationAngle = Math.toRadians(0);
 
     // An array of DcMotor variables, one for each drive motor.
     private DcMotor driveMotor[] = new DcMotor[wheelCount];
 
     // Convert the joystick's x/y values to a deflected angle, in radians.
     private static double getJoystickAngle(final double x, final double y) {
-        return Math.atan2(x, y);
+        return Math.atan2(y, x);
     }
 
     // Convert the joystick's x/y values to a deflected magnitude (0.0 to 1.0).
@@ -56,7 +56,7 @@ public class TeleOpFieldOriented extends OpMode {
         // angle (which end is the front), and the relative angle of the
         // particular wheel in question.
         double motorPower = Math.cos(robotOrientationAngle +
-                                     (wheelSpacingAngle * motor) -
+                                     (wheelSpacingAngle * motor) +
                                      angle);
 
         // Rescale the motor power based on the desired overall power level (the
@@ -133,7 +133,7 @@ public class TeleOpFieldOriented extends OpMode {
         }
 
         // Send the control parameters for debugging purposes.
-        telemetry.addData("a", a);
+        telemetry.addData("a", Math.toDegrees(a));
         telemetry.addData("m", m);
         telemetry.addData("r", r);
         telemetry.addData("o", o);
