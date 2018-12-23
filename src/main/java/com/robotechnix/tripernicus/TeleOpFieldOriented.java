@@ -119,7 +119,7 @@ public class TeleOpFieldOriented extends OpMode {
         // time) rather than a fixed point on the actual robot.
         double p[] = new double[3];
         for (int i=0; i < wheelCount; i++) {
-            p[i] = calculateTranslationMotorPower(i, a + o, m) + r;
+            p[i] = calculateTranslationMotorPower(i, a - o, m) + r;
         }
 
         // Calculate a scaling factor so that the translation + rotation values
