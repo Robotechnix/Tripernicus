@@ -133,10 +133,10 @@ public class TeleOpFieldOriented extends OpMode {
         }
 
         // Send the control parameters for debugging purposes.
-        telemetry.addData("a", Math.toDegrees(a));
-        telemetry.addData("m", m);
-        telemetry.addData("r", r);
-        telemetry.addData("o", o);
+        telemetry.addData("a", String.format(Locale.US, "%.1f°", Math.toDegrees(a)));
+        telemetry.addData("m", String.format(Locale.US, "%.0f%%", 100.0 * m));
+        telemetry.addData("r", String.format(Locale.US, "%.0f%%", 100.0 * r));
+        telemetry.addData("o", String.format(Locale.US, "%.1f°", Math.toDegrees(o)));
         for (int i=0; i < wheelCount; i++) {
             telemetry.addData("driveMotor[" + i + "]",
                     String.format(Locale.US, "%.0f%%", 100.0 * driveMotor[i].getPower()));
